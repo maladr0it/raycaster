@@ -7,7 +7,6 @@
 
 const int SCREEN_WIDTH = 400;
 const int SCREEN_HEIGHT = 400;
-const double DT = 16;
 
 static void put_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel);
 
@@ -35,19 +34,19 @@ int main(int argc, char *args[])
     struct game_state state =
         {
             .running = true,
-            .player = {.x = 0, .y = 0, .dx = 0, .dy = 0},
+            .map = {.width = 100, .height = 100},
+            .player = player_create(),
         };
 
     SDL_Event e;
 
     while (state.running)
     {
-        while (SDL_PollEvent(&e) != 0)
-        {
-            handle_input(&state, e);
-        }
+        double d_t = 16;
 
-        player_update(&(state.player), DT);
+        handle_input(&state);
+
+        player_update(&(state.player), d_t);
 
         SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0x00, 0x00, 0x00));
         SDL_Rect player_rect = {

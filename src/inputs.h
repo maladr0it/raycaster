@@ -3,6 +3,6 @@
 
 #include <SDL2/SDL.h>
 
-void handle_input(struct game_state *state, SDL_Event e);
+void handle_input(struct game_state *state);
 
 #endif

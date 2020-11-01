@@ -3,13 +3,19 @@
 
 struct player
 {
-  double x;
-  double y;
-  double dx;
-  double dy;
+    double x;
+    double y;
+    double angle;
+    double d_x;
+    double d_y;
+    double d_angle;
 };
 
-void player_move(struct player *p, double dx, double dy);
-void player_update(struct player *p, double dt);
+struct player player_create();
+void player_walk(struct player *p, double dir_strafe, double dir_forward);
+void player_stop_walk(struct player *p);
+void player_look(struct player *p, double look_h);
+void player_look_stop(struct player *p);
+void player_update(struct player *p, double d_t);
 
 #endif

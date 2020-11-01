@@ -7,6 +7,11 @@
 struct game_state
 {
     bool running;
+    struct
+    {
+        double height;
+        double width;
+    } map;
     struct player player;
 };
 
