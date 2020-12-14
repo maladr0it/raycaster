@@ -17,6 +17,7 @@ void handle_input(struct game_state *state)
         }
     }
 
+    // movement
     double input_strafe = 0;
     double input_forward = 0;
     keyboard_state = SDL_GetKeyboardState(NULL);
@@ -48,4 +49,18 @@ void handle_input(struct game_state *state)
     {
         player_stop_walk(&(state->player));
     }
+
+    // looking
+    double input_look = 0;
+
+    if (keyboard_state[SDL_SCANCODE_LEFT])
+    {
+        input_look -= 1;
+    }
+    if (keyboard_state[SDL_SCANCODE_RIGHT])
+    {
+        input_look += 1;
+    }
+
+    player_look(&(state->player), input_look);
 }
