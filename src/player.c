@@ -4,14 +4,14 @@
 
 typedef struct player player_t;
 
-const double WALK_SPEED = 5; // metres per second
+const double WALK_SPEED = 1; // metres per second
 const double LOOK_SPEED = 1; // radians per second
 
-player_t player_create()
+player_t player_create(double x, double y)
 {
     player_t player = {
-        .x = 0,
-        .y = 0,
+        .x = x,
+        .y = y,
         .angle = 0,
         .d_x = 0,
         .d_y = 0,
@@ -21,8 +21,8 @@ player_t player_create()
 
 void player_walk(player_t *p, double dir_strafe, double dir_forward)
 {
-    p->d_x = WALK_SPEED * (dir_strafe * cos(p->angle - M_PI_2) + dir_forward * cos(p->angle));
-    p->d_y = WALK_SPEED * (dir_strafe * sin(p->angle - M_PI_2) + dir_forward * sin(p->angle));
+    p->d_x = WALK_SPEED * (dir_forward * cos(p->angle) + dir_strafe * cos(p->angle - M_PI_2));
+    p->d_y = WALK_SPEED * (dir_forward * sin(p->angle) + dir_strafe * sin(p->angle - M_PI_2));
 }
 
 void player_stop_walk(player_t *p)
@@ -33,7 +33,7 @@ void player_stop_walk(player_t *p)
 
 void player_look(player_t *p, double look_h)
 {
-    // +ve is clockwise
+    // negative is clockwise
     p->d_angle = LOOK_SPEED * -look_h;
 }
 

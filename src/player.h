@@ -11,7 +11,7 @@ struct player
     double d_angle;
 };
 
-struct player player_create();
+struct player player_create(double x, double y);
 void player_walk(struct player *p, double dir_strafe, double dir_forward);
 void player_stop_walk(struct player *p);
 void player_look(struct player *p, double look_h);
