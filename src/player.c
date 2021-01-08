@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include "player.h"
 
-typedef struct player player_t;
-
 const double WALK_SPEED = 1; // metres per second
 const double LOOK_SPEED = 1; // radians per second
 

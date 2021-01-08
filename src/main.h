@@ -3,16 +3,13 @@
 
 #include <stdbool.h>
 #include "player.h"
+#include "map.h"
 
 struct game_state
 {
     bool running;
-    struct
-    {
-        double height;
-        double width;
-    } map;
-    struct player player;
+    map_t map;
+    player_t player;
 };
 
 #endif
