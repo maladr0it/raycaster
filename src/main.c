@@ -49,7 +49,7 @@ int main(int argc, char *args[])
         return 1;
     }
 
-    SDL_Texture *canvas_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_STREAMING, canvas->w, canvas->h);
+    SDL_Texture *canvas_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
     if (canvas_texture == NULL)
     {
         return 1;
@@ -59,6 +59,8 @@ int main(int argc, char *args[])
     {
         return 1;
     }
+
+    console_t console = console_create(SCREEN_WIDTH);
 
     struct game_state state =
         {
@@ -105,11 +107,15 @@ int main(int argc, char *args[])
         int line_end_y = minimap_player_y + 20 * sin(-state.player.angle);
         draw_line(canvas, minimap_player_x, minimap_player_y, line_end_x, line_end_y, SDL_MapRGB(canvas->format, 0x00, 0x00, 0xff));
 
+        console_log(&console, "x: %f, y: %f", state.player.x, state.player.y);
+
         // render to screen
-        // SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, canvas);
         SDL_UpdateTexture(canvas_texture, NULL, canvas->pixels, canvas->pitch);
         SDL_RenderCopy(renderer, canvas_texture, NULL, NULL);
+        console_render(console, renderer);
         SDL_RenderPresent(renderer);
+
+        console_clear(&console);
     }
 
     return 0;

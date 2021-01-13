@@ -24,7 +24,7 @@ static void draw_line_gentle(SDL_Surface *surface, int x0, int y0, int x1, int y
         d_y = -d_y;
     }
 
-    int D = 2 * d_y - d_x;
+    int error = 2 * d_y - d_x;
     int x = x0;
     int y = y0;
     while (x < x1)
@@ -32,14 +32,14 @@ static void draw_line_gentle(SDL_Surface *surface, int x0, int y0, int x1, int y
         put_pixel(surface, x, y, pixel);
         x += x_inc;
 
-        if (D > 0)
+        if (error > 0)
         {
             y += y_inc;
-            D += (2 * (d_y - d_x));
+            error += (2 * (d_y - d_x));
         }
         else
         {
-            D += (2 * d_y);
+            error += (2 * d_y);
         }
     }
 }
@@ -56,7 +56,7 @@ static void draw_line_steep(SDL_Surface *surface, int x0, int y0, int x1, int y1
         d_x = -d_x;
     }
 
-    int D = 2 * d_x - d_y;
+    int error = 2 * d_x - d_y;
     int x = x0;
     int y = y0;
     while (y < y1)
@@ -64,14 +64,14 @@ static void draw_line_steep(SDL_Surface *surface, int x0, int y0, int x1, int y1
         put_pixel(surface, x, y, pixel);
         y += y_inc;
 
-        if (D > 0)
+        if (error > 0)
         {
             x += x_inc;
-            D += (2 * (d_x - d_y));
+            error += (2 * (d_x - d_y));
         }
         else
         {
-            D += (2 * d_x);
+            error += (2 * d_x);
         }
     }
 }
