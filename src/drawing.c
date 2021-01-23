@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 #include <stdio.h>
+#include "drawing.h"
 
 void put_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
 {
@@ -100,4 +101,25 @@ void draw_line(SDL_Surface *surface, int x0, int y0, int x1, int y1, Uint32 pixe
             draw_line_steep(surface, x1, y1, x0, y0, pixel);
         }
     }
+}
+
+void draw_rect(SDL_Surface *surface, int x0, int y0, int width, int height, Uint32 pixel)
+{
+    int from_x = x0 < 0 ? 0 : x0;
+    int to_x = x0 + width > surface->w ? surface->w : x0 + width;
+    int from_y = y0 < 0 ? 0 : y0;
+    int to_y = y0 + height > surface->h ? surface->h : y0 + height;
+
+    for (int y = from_y; y < to_y; y++)
+    {
+        for (int x = from_x; x < to_x; x++)
+        {
+            put_pixel(surface, x, y, pixel);
+        }
+    }
+}
+
+void draw_rect_centered(SDL_Surface *surface, int x0, int y0, int width, int height, Uint32 pixel)
+{
+    draw_rect(surface, x0 - width / 2, y0 - width / 2, width, height, pixel);
 }

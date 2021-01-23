@@ -5,15 +5,19 @@
 #include <math.h>
 #include "main.h"
 #include "map.h"
+#include "minimap.h"
 #include "inputs.h"
 #include "player.h"
-#include "drawing.h"
 #include "console.h"
+#include "ray_caster.h"
 
-const int SCREEN_WIDTH = 400;
-const int SCREEN_HEIGHT = 400;
-const int MINIMAP_WIDTH = 100;
-const int MINIMAP_HEIGHT = 100;
+const int SCREEN_WIDTH = 512;
+const int SCREEN_HEIGHT = 512;
+const int MINIMAP_SIZE = 128;
+SDL_Rect MINIMAP_DEST_RECT = {SCREEN_WIDTH - MINIMAP_SIZE, 0, MINIMAP_SIZE, MINIMAP_SIZE};
+
+const int UPDATES_PER_SECOND = 60;
+const int DT = 1000 / UPDATES_PER_SECOND;
 
 int MAP_DATA[5][5] = {
     {1, 1, 1, 1, 1},
@@ -26,7 +30,7 @@ int main(int argc, char *args[])
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
     SDL_Window *window = SDL_CreateWindow(
@@ -34,46 +38,40 @@ int main(int argc, char *args[])
         SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL)
     {
-        return 1;
+        exit(EXIT_FAILURE);
     }
-
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
     if (renderer == NULL)
     {
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
-    SDL_Surface *canvas = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
-    if (canvas == NULL)
+    SDL_Surface *scene_surface = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
+    if (scene_surface == NULL)
     {
-        return 1;
+        exit(EXIT_FAILURE);
     }
-
-    SDL_Texture *canvas_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
-    if (canvas_texture == NULL)
+    SDL_Texture *scene_texture = SDL_CreateTexture(renderer, SDL_PIXELTYPE_UNKNOWN, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
+    if (scene_texture == NULL)
     {
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
-    if (TTF_Init() < 0)
-    {
-        return 1;
-    }
-
-    console_t console = console_create(SCREEN_WIDTH);
+    minimap_t minimap = minimap_create(renderer, MINIMAP_SIZE);
+    console_init(renderer, SCREEN_WIDTH);
 
     struct game_state state =
         {
             .running = true,
             .map = map_create((int *)MAP_DATA, 5, 5),
-            .player = player_create(2, 2),
+            .player = player_create(2.5, 2.5),
         };
 
     SDL_Event e;
 
     while (state.running)
     {
-        double d_t = 16;
+        double d_t = DT;
 
         handle_input(&state);
 
@@ -81,42 +79,27 @@ int main(int argc, char *args[])
 
         // clear screen
         SDL_RenderClear(renderer);
-        SDL_FillRect(canvas, NULL, SDL_MapRGB(canvas->format, 0x00, 0x00, 0x00));
+        SDL_FillRect(scene_surface, NULL, SDL_MapRGB(scene_surface->format, 0x00, 0x00, 0x00));
+        console_clear();
 
-        // draw minimap
-        SDL_Rect minimap_rect = {
-            .w = MINIMAP_WIDTH,
-            .h = MINIMAP_HEIGHT,
-            .x = SCREEN_WIDTH - MINIMAP_WIDTH,
-            .y = 0};
-        SDL_FillRect(canvas, &minimap_rect, SDL_MapRGB(canvas->format, 0xff, 0x00, 0x00));
+        // render
+        console_log("x: %f, y: %f, phi: %f", state.player.x, state.player.y, state.player.angle);
 
-        // draw player position
-        double minimap_player_x = SCREEN_WIDTH - MINIMAP_WIDTH + state.player.x * (MINIMAP_WIDTH / state.map.width);
-        double minimap_player_y = MINIMAP_HEIGHT - (state.player.y) * (MINIMAP_HEIGHT / state.map.height);
-        SDL_Rect minimap_player_rect = {
-            .w = 4,
-            .h = 4,
-            .x = minimap_player_x,
-            .y = minimap_player_y,
-        };
-        SDL_FillRect(canvas, &minimap_player_rect, SDL_MapRGB(canvas->format, 0x00, 0xff, 0x00));
+        // cast_ray(state.map, state.player.x, state.player.y, state.player.angle);
 
-        // draw player angle
-        int line_end_x = minimap_player_x + 20 * cos(state.player.angle);
-        int line_end_y = minimap_player_y + 20 * sin(-state.player.angle);
-        draw_line(canvas, minimap_player_x, minimap_player_y, line_end_x, line_end_y, SDL_MapRGB(canvas->format, 0x00, 0x00, 0xff));
+        SDL_UpdateTexture(scene_texture, NULL, scene_surface->pixels, scene_surface->pitch);
+        SDL_RenderCopy(renderer, scene_texture, NULL, NULL);
 
-        console_log(&console, "x: %f, y: %f", state.player.x, state.player.y);
+        // render minimap
+        minimap_render(&minimap, MINIMAP_DEST_RECT, state.map, state.player);
 
-        // render to screen
-        SDL_UpdateTexture(canvas_texture, NULL, canvas->pixels, canvas->pitch);
-        SDL_RenderCopy(renderer, canvas_texture, NULL, NULL);
-        console_render(console, renderer);
+        console_render();
+        // minimap_update_surface(minimap_surface, state.map, state.player);
+        // SDL_UpdateTexture(minimap_texture, NULL, minimap_surface->pixels, minimap_surface->pitch);
+        // SDL_UpdateTexture(minimap_texture, &MINIMAP_DEST_RECT, minimap_surface->pixels, minimap_surface->pitch);
+
         SDL_RenderPresent(renderer);
-
-        console_clear(&console);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
