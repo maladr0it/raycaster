@@ -10,7 +10,6 @@ typedef struct minimap
     SDL_Renderer *renderer;
     SDL_Surface *surface;
     SDL_Texture *texture;
-    double range;
 } minimap_t;
 
 minimap_t minimap_create(SDL_Renderer *renderer, int size);

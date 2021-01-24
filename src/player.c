@@ -11,7 +11,7 @@ player_t player_create(double x, double y)
     player_t player = {
         .x = x,
         .y = y,
-        .angle = M_PI + 0.5,
+        .angle = 0,
         .d_x = 0,
         .d_y = 0,
         .d_angle = 0};

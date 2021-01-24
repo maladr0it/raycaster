@@ -24,6 +24,11 @@ double mod(double val, double upper)
     return val;
 }
 
+int min_int(int val1, int val2)
+{
+    return val1 < val2 ? val1 : val2;
+}
+
 int clamp_int(int val, int lower, int upper)
 {
     if (val < lower)
