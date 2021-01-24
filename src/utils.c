@@ -24,7 +24,7 @@ double mod(double val, double upper)
     return val;
 }
 
-double clamp(double val, double lower, double upper)
+int clamp_int(int val, int lower, int upper)
 {
     if (val < lower)
     {

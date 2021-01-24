@@ -5,6 +5,6 @@
 
 void *safe_malloc(size_t size);
 double mod(double val, double upper);
-double clamp(double val, double lower, double upper);
+int clamp_int(int val, int lower, int upper);
 
 #endif

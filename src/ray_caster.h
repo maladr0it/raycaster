@@ -1,3 +1,3 @@
 #include "map.h"
 
-double cast_ray(map_t map, double x0, double y0, double angle);
+void cast_rays(double *ray_distances, int n_rays, map_t map, double x0, double y0, double angle);

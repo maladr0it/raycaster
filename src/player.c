@@ -11,7 +11,7 @@ player_t player_create(double x, double y)
     player_t player = {
         .x = x,
         .y = y,
-        .angle = 0,
+        .angle = M_PI + 0.5,
         .d_x = 0,
         .d_y = 0,
         .d_angle = 0};
@@ -32,7 +32,6 @@ void player_stop_walk(player_t *p)
 
 void player_look(player_t *p, double look_h)
 {
-    // positive is clockwise
     p->d_angle = LOOK_SPEED * look_h;
 }
 

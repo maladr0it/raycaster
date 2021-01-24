@@ -10,6 +10,7 @@
 #include "player.h"
 #include "console.h"
 #include "ray_caster.h"
+#include "drawing.h"
 
 const int SCREEN_WIDTH = 512;
 const int SCREEN_HEIGHT = 512;
@@ -69,6 +70,8 @@ int main(int argc, char *args[])
 
     SDL_Event e;
 
+    double ray_distances[SCREEN_WIDTH];
+
     while (state.running)
     {
         double d_t = DT;
@@ -85,18 +88,20 @@ int main(int argc, char *args[])
         // render
         console_log("x: %f, y: %f, phi: %f", state.player.x, state.player.y, state.player.angle);
 
-        // cast_ray(state.map, state.player.x, state.player.y, state.player.angle);
+        cast_rays(ray_distances, SCREEN_WIDTH, state.map, state.player.x, state.player.y, state.player.angle);
+
+        for (int i = 0; i < SCREEN_WIDTH; i++)
+        {
+            int col_height = SCREEN_HEIGHT / ray_distances[i];
+            draw_col(scene_surface, i, col_height, SDL_MapRGB(scene_surface->format, 0x00, 0xff, 0xff));
+        }
 
         SDL_UpdateTexture(scene_texture, NULL, scene_surface->pixels, scene_surface->pitch);
         SDL_RenderCopy(renderer, scene_texture, NULL, NULL);
 
-        // render minimap
         minimap_render(&minimap, MINIMAP_DEST_RECT, state.map, state.player);
 
         console_render();
-        // minimap_update_surface(minimap_surface, state.map, state.player);
-        // SDL_UpdateTexture(minimap_texture, NULL, minimap_surface->pixels, minimap_surface->pitch);
-        // SDL_UpdateTexture(minimap_texture, &MINIMAP_DEST_RECT, minimap_surface->pixels, minimap_surface->pitch);
 
         SDL_RenderPresent(renderer);
     }

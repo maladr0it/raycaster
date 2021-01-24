@@ -42,17 +42,18 @@ void minimap_render(minimap_t *minimap, SDL_Rect dest_rect, map_t map, player_t 
 
     draw_rect(surface, 0, 0, surface->w, surface->h, bg_color);
 
-    // draw entire map, offset by payer position
-    for (int i = 0; i < map.height; i++)
+    // draw map grid, fill walls
+    for (int y = 0; y < map.height; y++)
     {
-        for (int j = 0; j < map.width; j++)
+        for (int x = 0; x < map.width; x++)
         {
-            if (map_get(map, j, i) == 1)
+            double draw_x = surface->w / 2 + (x - player.x) * PX_PER_UNIT;
+            double draw_y = surface->h / 2 + (y - player.y) * PX_PER_UNIT;
+            if (map_get(map, x, y) == 1)
             {
-                double draw_pos_x = surface->w / 2 + (j - player.x) * PX_PER_UNIT;
-                double draw_pos_y = surface->h / 2 + (i - player.y) * PX_PER_UNIT;
-                draw_rect(surface, draw_pos_x, draw_pos_y, PX_PER_UNIT, PX_PER_UNIT, wall_color);
+                draw_rect(surface, draw_x, draw_y, PX_PER_UNIT, PX_PER_UNIT, wall_color);
             }
+            draw_rect_outline(surface, draw_x, draw_y, PX_PER_UNIT, PX_PER_UNIT, line_color);
         }
     }
 
@@ -60,7 +61,7 @@ void minimap_render(minimap_t *minimap, SDL_Rect dest_rect, map_t map, player_t 
     draw_line(surface, surface->w / 2, surface->h / 2, surface->w / 2 + ANGLE_LINE_LEN * cos(player.angle), surface->w / 2 + ANGLE_LINE_LEN * sin(player.angle), player_color);
     draw_rect_centered(surface, surface->w / 2, surface->h / 2, PLAYER_DOT_SIZE, PLAYER_DOT_SIZE, player_color);
 
-        SDL_UpdateTexture(minimap->texture, NULL, minimap->surface->pixels, minimap->surface->pitch);
+    SDL_UpdateTexture(minimap->texture, NULL, minimap->surface->pixels, minimap->surface->pitch);
     SDL_RenderCopy(minimap->renderer, minimap->texture, NULL, &dest_rect);
 }
 

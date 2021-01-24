@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdio.h>
 #include "drawing.h"
+#include "utils.h"
 
 void put_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
 {
@@ -105,10 +106,10 @@ void draw_line(SDL_Surface *surface, int x0, int y0, int x1, int y1, Uint32 pixe
 
 void draw_rect(SDL_Surface *surface, int x0, int y0, int width, int height, Uint32 pixel)
 {
-    int from_x = x0 < 0 ? 0 : x0;
-    int to_x = x0 + width > surface->w ? surface->w : x0 + width;
-    int from_y = y0 < 0 ? 0 : y0;
-    int to_y = y0 + height > surface->h ? surface->h : y0 + height;
+    int from_x = clamp_int(x0, 0, surface->w);
+    int to_x = clamp_int(x0 + width, 0, surface->w);
+    int from_y = clamp_int(y0, 0, surface->h);
+    int to_y = clamp_int(y0 + height, 0, surface->h);
 
     for (int y = from_y; y < to_y; y++)
     {
@@ -122,4 +123,34 @@ void draw_rect(SDL_Surface *surface, int x0, int y0, int width, int height, Uint
 void draw_rect_centered(SDL_Surface *surface, int x0, int y0, int width, int height, Uint32 pixel)
 {
     draw_rect(surface, x0 - width / 2, y0 - width / 2, width, height, pixel);
+}
+
+void draw_rect_outline(SDL_Surface *surface, int x0, int y0, int width, int height, Uint32 pixel)
+{
+    int from_x = clamp_int(x0, 0, surface->w);
+    int to_x = clamp_int(x0 + width, 0, surface->w);
+    int from_y = clamp_int(y0, 0, surface->h);
+    int to_y = clamp_int(y0 + height, 0, surface->h);
+
+    for (int x = from_x; x < to_x; x++)
+    {
+        put_pixel(surface, x, y0, pixel);
+        put_pixel(surface, x, y0 + height, pixel);
+    }
+    for (int y = from_y; y < to_y; y++)
+    {
+        put_pixel(surface, x0, y, pixel);
+        put_pixel(surface, x0 + width, y, pixel);
+    }
+}
+
+void draw_col(SDL_Surface *surface, int x0, int height, Uint32 pixel)
+{
+    int from_y = (surface->h - height) / 2;
+    int to_y = surface->h - from_y;
+
+    for (int y = from_y; y < to_y; y++)
+    {
+        put_pixel(surface, x0, y, pixel);
+    }
 }
