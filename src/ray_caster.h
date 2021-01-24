@@ -17,14 +17,14 @@ enum surface_type
     WALL,
 };
 
-typedef struct raycast_result
+typedef struct ray_intersect
 {
     bool hit;
     double distance;
     enum face face;
     int surface_type;
-} raycast_result_t;
+} ray_intersect_t;
 
-void cast_ray(raycast_result_t *result, map_t map, double x0, double y0, double angle, double ray_angle);
+void cast_ray(ray_intersect_t *intersect, map_t map, double x0, double y0, double angle, double ray_angle);
 
 #endif

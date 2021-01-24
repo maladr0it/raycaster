@@ -3,135 +3,127 @@
 #include <float.h>
 #include "ray_caster.h"
 #include "map.h"
+#include "console.h"
 
 static const double FOV = 60 * M_PI / (180);
 
-static raycast_result_t get_h_intersection_above(map_t map, double x0, double y0, double angle, double ray_angle)
+static const int MAX_DIST = 16;
+
+static void get_h_intersect_above(ray_intersect_t *intersect, map_t map, double x0, double y0, double angle, double ray_angle)
 {
-    raycast_result_t result;
-    result.hit = false;
-    result.distance = DBL_MAX;
-    int y_step = -1;
+    double y_step = -1;
     double x_step = y_step / tan(ray_angle);
-    int y = floor(y0);
+    double y = floor(y0);
     double x = x0 + (y - y0) / tan(ray_angle);
 
-    while (x > 0 && x < map.width && y > 0)
+    while (fabs(x - x0) < MAX_DIST && fabs(y - y0) < MAX_DIST)
     {
-        if (map_get(map, (int)x, y - 1) == 1)
+        if (map_get(map, floor(x), y - 1) == 1)
         {
-            result.hit = true;
-            result.distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
-            result.face = SOUTH;
-            result.surface_type = 1;
-            return result;
+            intersect->hit = true;
+            intersect->distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
+            intersect->face = SOUTH;
+            intersect->surface_type = 1;
+            return;
         }
         x += x_step;
         y += y_step;
     }
-    return result;
 }
 
-static raycast_result_t get_h_intersection_below(map_t map, double x0, double y0, double angle, double ray_angle)
+static void get_h_intersect_below(ray_intersect_t *intersect, map_t map, double x0, double y0, double angle, double ray_angle)
 {
-    raycast_result_t result;
-    result.hit = false;
-    result.distance = DBL_MAX;
-    int y_step = 1;
+    double y_step = 1;
     double x_step = y_step / tan(ray_angle);
-    int y = ceil(y0);
+    double y = ceil(y0);
     double x = x0 + (y - y0) / tan(ray_angle);
 
-    while (x > 0 && x < map.width && y < map.height)
+    while (fabs(x - x0) < MAX_DIST && fabs(y - y0) < MAX_DIST)
     {
-        if (map_get(map, (int)x, y) == 1)
+        if (map_get(map, floor(x), y) == 1)
         {
-            result.hit = true;
-            result.distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
-            result.face = NORTH;
-            result.surface_type = 1;
-            return result;
+            intersect->hit = true;
+            intersect->distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
+            intersect->face = NORTH;
+            intersect->surface_type = 1;
+            return;
         }
         x += x_step;
         y += y_step;
     }
-    return result;
 }
 
-static raycast_result_t get_v_intersection_left(map_t map, double x0, double y0, double angle, double ray_angle)
+static void get_v_intersect_left(ray_intersect_t *intersect, map_t map, double x0, double y0, double angle, double ray_angle)
 {
-    raycast_result_t result;
-    result.hit = false;
-    result.distance = DBL_MAX;
-    int x_step = -1;
+    double x_step = -1;
     double y_step = x_step * tan(ray_angle);
-    int x = floor(x0);
+    double x = floor(x0);
     double y = y0 + (x - x0) * tan(ray_angle);
 
-    while (y > 0 && y < map.height && x > 0)
+    while (fabs(x - x0) < MAX_DIST && fabs(y - y0) < MAX_DIST)
     {
-        if (map_get(map, x - 1, (int)y) == 1)
+        if (map_get(map, x - 1, floor(y)) == 1)
         {
-            result.hit = true;
-            result.distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
-            result.face = EAST;
-            result.surface_type = 1;
-            return result;
+            intersect->hit = true;
+            intersect->distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
+            intersect->face = EAST;
+            intersect->surface_type = 1;
+            return;
         }
         x += x_step;
         y += y_step;
     }
-    return result;
 }
 
-static raycast_result_t get_v_intersection_right(map_t map, double x0, double y0, double angle, double ray_angle)
+static void get_v_intersect_right(ray_intersect_t *intersect, map_t map, double x0, double y0, double angle, double ray_angle)
 {
-    raycast_result_t result;
-    result.hit = false;
-    result.distance = DBL_MAX;
-    int x_step = 1;
+    double x_step = 1;
     double y_step = x_step * tan(ray_angle);
-    int x = ceil(x0);
+    double x = ceil(x0);
     double y = y0 + (x - x0) * tan(ray_angle);
 
-    while (y > 0 && y < map.height && x < map.width)
+    while (fabs(x - x0) < MAX_DIST && fabs(y - y0) < MAX_DIST)
     {
-        if (map_get(map, x, (int)y) == 1)
+        if (map_get(map, x, floor(y)) == 1)
         {
-            result.hit = true;
-            result.distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
-            result.face = WEST;
-            result.surface_type = 1;
-            return result;
+            intersect->hit = true;
+            intersect->distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
+            intersect->face = WEST;
+            intersect->surface_type = 1;
+            return;
         }
         x += x_step;
         y += y_step;
     }
-    return result;
 }
 
-void cast_ray(raycast_result_t *result, map_t map, double x0, double y0, double angle, double ray_angle)
+void cast_ray(ray_intersect_t *intersect, map_t map, double x0, double y0, double angle, double ray_angle)
 {
-    raycast_result_t h_intersection;
-    raycast_result_t v_intersection;
+    ray_intersect_t h_intersect;
+    h_intersect.hit = false;
+    h_intersect.distance = DBL_MAX;
 
-    if (ray_angle >= M_PI)
-    {
-        h_intersection = get_h_intersection_above(map, x0, y0, angle, ray_angle);
-    }
-    else
-    {
-        h_intersection = get_h_intersection_below(map, x0, y0, angle, ray_angle);
-    }
+    ray_intersect_t v_intersect;
+    v_intersect.hit = false;
+    v_intersect.distance = DBL_MAX;
 
-    if (ray_angle >= M_PI_2 && ray_angle < (M_PI + M_PI_2))
+    if (ray_angle > M_PI)
     {
-        v_intersection = get_v_intersection_left(map, x0, y0, angle, ray_angle);
+        get_h_intersect_above(&h_intersect, map, x0, y0, angle, ray_angle);
     }
-    else
+    else if (ray_angle < M_PI)
     {
-        v_intersection = get_v_intersection_right(map, x0, y0, angle, ray_angle);
+        get_h_intersect_below(&h_intersect, map, x0, y0, angle, ray_angle);
     }
 
-    *result = h_intersection.distance < v_intersection.distance ? h_intersection : v_intersection;
+    if (ray_angle > M_PI_2 && ray_angle < (M_PI + M_PI_2))
+    {
+        get_v_intersect_left(&v_intersect, map, x0, y0, angle, ray_angle);
+    }
+    else if (ray_angle < M_PI_2 || ray_angle > (M_PI + M_PI_2))
+    {
+        get_v_intersect_right(&v_intersect, map, x0, y0, angle, ray_angle);
+    }
+
+    *intersect = h_intersect.distance < v_intersect.distance ? h_intersect : v_intersect;
 }

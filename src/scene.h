@@ -14,5 +14,6 @@ typedef struct scene
 
 scene_t scene_create(SDL_Renderer *renderer, int width, int height);
 void scene_render(scene_t *scene, map_t map, player_t player);
+void scene_destroy(scene_t *scene);
 
 #endif

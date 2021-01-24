@@ -5,8 +5,8 @@
 #include "console.h"
 #include "utils.h"
 
-const int PLAYER_DOT_SIZE = 5; // pixels;
-const int ANGLE_LINE_LEN = 10; // pixels;
+const int PLAYER_DOT_SIZE = 5;  // pixels;
+const int ANGLE_LINE_LEN = 100; // pixels;
 const int PX_PER_UNIT = 32;
 
 minimap_t minimap_create(SDL_Renderer *renderer, int size)
