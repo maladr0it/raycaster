@@ -13,7 +13,9 @@ typedef struct minimap
 } minimap_t;
 
 minimap_t minimap_create(SDL_Renderer *renderer, int size);
+
 void minimap_render(minimap_t *minimap, SDL_Rect dest_rect, map_t map, player_t player);
+
 void minimap_destroy(minimap_t *minimap);
 
 #endif

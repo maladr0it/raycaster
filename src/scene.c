@@ -1,20 +1,12 @@
-#include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "scene.h"
 #include "map.h"
 #include "player.h"
 #include "utils.h"
 #include "ray_caster.h"
 #include "drawing.h"
-#include "console.h"
-
-typedef struct scene
-{
-    SDL_Renderer *renderer;
-    SDL_Surface *surface;
-    SDL_Texture *texture;
-} scene_t;
 
 static const double FOV = 60 * M_PI / (180);
 

@@ -2,7 +2,6 @@
 #include <math.h>
 #include "minimap.h"
 #include "drawing.h"
-#include "console.h"
 #include "utils.h"
 
 const int PLAYER_DOT_SIZE = 5; // pixels;

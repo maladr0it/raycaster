@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <math.h>
-#include <float.h>
 #include "ray_caster.h"
 #include "map.h"
-#include "console.h"
 
 static const double FOV = 60 * M_PI / (180);
 
