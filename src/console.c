@@ -14,7 +14,7 @@ typedef struct console
 
 const int LINE_BUFFER_LEN = 128;
 const int TEXT_BUFFER_LEN = 1024;
-const SDL_Color COLOR = {255, 255, 255};
+const SDL_Color COLOR = {0, 0, 0};
 
 static console_t console;
 static char console_text[TEXT_BUFFER_LEN];

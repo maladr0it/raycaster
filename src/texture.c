@@ -22,3 +22,8 @@ Uint32 texture_get(SDL_Surface *texture, double u, double v)
     Uint32 *pixels = texture->pixels;
     return pixels[y * texture->w + x];
 }
+
+void texture_destroy(SDL_Surface *texture)
+{
+    SDL_FreeSurface(texture);
+}

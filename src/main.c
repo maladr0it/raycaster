@@ -10,8 +10,8 @@
 
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 1024;
-const int SCENE_WIDTH = 256;
-const int SCENE_HEIGHT = 256;
+const int SCENE_WIDTH = 512;
+const int SCENE_HEIGHT = 512;
 const int MINIMAP_SIZE = 128;
 SDL_Rect MINIMAP_DEST_RECT = {SCREEN_WIDTH - MINIMAP_SIZE, 0, MINIMAP_SIZE, MINIMAP_SIZE};
 
@@ -23,10 +23,10 @@ enum map_symbol MAP_DATA[100] = {
     'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W',
     'W', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'W',
     'W', ' ', 'W', ' ', ' ', ' ', ' ', ' ', ' ', 'W',
-    'W', ' ', 'W', ' ', ' ', 'W', ' ', 'W', ' ', 'W',
-    'W', ' ', 'W', ' ', ' ', 'W', ' ', 'W', ' ', 'W',
-    'W', ' ', ' ', ' ', ' ', 'W', ' ', 'W', ' ', 'W',
-    'W', ' ', ' ', ' ', ' ', 'W', ' ', 'W', ' ', 'W',
+    'W', ' ', 'W', ' ', ' ', ' ', ' ', 'W', ' ', 'W',
+    'W', ' ', 'W', ' ', ' ', ' ', ' ', 'W', ' ', 'W',
+    'W', ' ', ' ', ' ', ' ', ' ', ' ', 'W', ' ', 'W',
+    'W', ' ', ' ', 'W', ' ', ' ', ' ', 'W', ' ', 'W',
     'W', ' ', ' ', ' ', ' ', ' ', ' ', 'W', ' ', 'W',
     'W', ' ', ' ', ' ', ' ', ' ', ' ', 'W', ' ', 'W',
     'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W',
