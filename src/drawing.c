@@ -1,6 +1,4 @@
-#include <SDL2/SDL.h>
 #include <math.h>
-#include <stdio.h>
 #include "drawing.h"
 #include "utils.h"
 
@@ -144,13 +142,54 @@ void draw_rect_outline(SDL_Surface *surface, int x0, int y0, int width, int heig
     }
 }
 
-void draw_col(SDL_Surface *surface, int x0, int height, Uint32 pixel)
+// TODO: consider performance here
+Uint32 change_brightness(Uint32 pixel)
 {
-    int from_y = (surface->h - height) / 2;
-    int to_y = surface->h - from_y;
+    Uint8 r, g, b;
+    SDL_PixelFormat *format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBX8888);
+    SDL_GetRGB(pixel, format, &r, &g, &b);
+
+    r /= 2;
+    g /= 2;
+    b /= 2;
+
+    return SDL_MapRGB(format, r, g, b);
+}
+
+void draw_col(SDL_Surface *surface, ray_intersect_t intersect, int x0)
+{
+    int from_y;
+    int to_y;
+    double from_v;
+    double to_v;
+    if (intersect.distance >= 1)
+    {
+        int height = surface->h / intersect.distance;
+        from_y = (surface->h - height) / 2;
+        to_y = surface->h - from_y;
+        from_v = 0;
+        to_v = 1;
+    }
+    else
+    {
+        from_y = 0;
+        to_y = surface->h;
+        from_v = (1 - intersect.distance) / 2;
+        to_v = 1 - from_v;
+    }
+
+    double u = intersect.texture_u;
+    double v = from_v;
+    double v_inc = (to_v - from_v) / (to_y - from_y);
 
     for (int y = from_y; y < to_y; y++)
     {
-        put_pixel(surface, x0, y, pixel);
+        Uint32 color = texture_get(intersect.tile.texture, u, v);
+        if (intersect.face == NORTH || intersect.face == SOUTH)
+        {
+            color = change_brightness(color);
+        }
+        put_pixel(surface, x0, y, color);
+        v += v_inc;
     }
 }

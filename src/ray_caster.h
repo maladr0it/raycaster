@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "map.h"
 
-enum face
+enum direction
 {
     NORTH,
     EAST,
@@ -12,17 +12,14 @@ enum face
     WEST
 };
 
-enum surface_type
-{
-    WALL,
-};
-
 typedef struct ray_intersect
 {
     bool hit;
+    tile_t tile;
     double distance;
-    enum face face;
-    int surface_type;
+    double texture_u;
+    enum direction face;
+
 } ray_intersect_t;
 
 void cast_ray(ray_intersect_t *intersect, map_t map, double x0, double y0, double angle, double ray_angle);

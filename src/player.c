@@ -3,8 +3,8 @@
 #include "player.h"
 #include "utils.h"
 
-const double WALK_SPEED = 1; // metres per second
-const double LOOK_SPEED = 1; // radians per second
+const double WALK_SPEED = 5; // metres per second
+const double LOOK_SPEED = 2; // radians per second
 
 player_t player_create(double x, double y)
 {

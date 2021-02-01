@@ -18,12 +18,14 @@ static void get_h_intersect_above(ray_intersect_t *intersect, map_t map, double 
 
     while (fabs(x - x0) < MAX_DIST && fabs(y - y0) < MAX_DIST)
     {
-        if (map_get(map, floor(x), y - 1) == 1)
+        tile_t tile = map_get(map, floor(x), y - 1);
+        if (tile.type == TILE_WALL)
         {
             intersect->hit = true;
+            intersect->tile = tile;
             intersect->distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
+            intersect->texture_u = x - floor(x);
             intersect->face = SOUTH;
-            intersect->surface_type = 1;
             return;
         }
         x += x_step;
@@ -40,12 +42,14 @@ static void get_h_intersect_below(ray_intersect_t *intersect, map_t map, double 
 
     while (fabs(x - x0) < MAX_DIST && fabs(y - y0) < MAX_DIST)
     {
-        if (map_get(map, floor(x), y) == 1)
+        tile_t tile = map_get(map, floor(x), y);
+        if (tile.type == TILE_WALL)
         {
             intersect->hit = true;
+            intersect->tile = tile;
             intersect->distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
+            intersect->texture_u = ceil(x) - x;
             intersect->face = NORTH;
-            intersect->surface_type = 1;
             return;
         }
         x += x_step;
@@ -62,12 +66,14 @@ static void get_v_intersect_left(ray_intersect_t *intersect, map_t map, double x
 
     while (fabs(x - x0) < MAX_DIST && fabs(y - y0) < MAX_DIST)
     {
-        if (map_get(map, x - 1, floor(y)) == 1)
+        tile_t tile = map_get(map, x - 1, floor(y));
+        if (tile.type == TILE_WALL)
         {
             intersect->hit = true;
+            intersect->tile = tile;
             intersect->distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
+            intersect->texture_u = ceil(y) - y;
             intersect->face = EAST;
-            intersect->surface_type = 1;
             return;
         }
         x += x_step;
@@ -84,12 +90,14 @@ static void get_v_intersect_right(ray_intersect_t *intersect, map_t map, double 
 
     while (fabs(x - x0) < MAX_DIST && fabs(y - y0) < MAX_DIST)
     {
-        if (map_get(map, x, floor(y)) == 1)
+        tile_t tile = map_get(map, x, floor(y));
+        if (tile.type == TILE_WALL)
         {
             intersect->hit = true;
+            intersect->tile = tile;
             intersect->distance = (x - x0) * cos(angle) + (y - y0) * sin(angle);
+            intersect->texture_u = y - floor(y);
             intersect->face = WEST;
-            intersect->surface_type = 1;
             return;
         }
         x += x_step;

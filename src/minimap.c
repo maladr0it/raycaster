@@ -5,18 +5,18 @@
 #include "console.h"
 #include "utils.h"
 
-const int PLAYER_DOT_SIZE = 5;  // pixels;
-const int ANGLE_LINE_LEN = 100; // pixels;
-const int PX_PER_UNIT = 32;
+const int PLAYER_DOT_SIZE = 5; // pixels;
+const int ANGLE_LINE_LEN = 10; // pixels;
+const int PX_PER_UNIT = 16;
 
 minimap_t minimap_create(SDL_Renderer *renderer, int size)
 {
-    SDL_Surface *surface = SDL_CreateRGBSurface(0, size, size, 32, 0, 0, 0, 0);
+    SDL_Surface *surface = SDL_CreateRGBSurface(0, size, size, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
     if (surface == NULL)
     {
         exit(EXIT_FAILURE);
     }
-    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELTYPE_UNKNOWN, SDL_TEXTUREACCESS_STREAMING, size, size);
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING, size, size);
     if (texture == NULL)
     {
         exit(EXIT_FAILURE);
@@ -35,10 +35,10 @@ void minimap_render(minimap_t *minimap, SDL_Rect dest_rect, map_t map, player_t 
     SDL_Surface *surface = minimap->surface;
     SDL_PixelFormat *format = surface->format;
 
-    Uint32 bg_color = SDL_MapRGB(format, 0xff, 0x00, 0x00);
-    Uint32 player_color = SDL_MapRGB(format, 0x00, 0x00, 0xff);
-    Uint32 line_color = SDL_MapRGB(format, 0x00, 0xff, 0x00);
-    Uint32 wall_color = SDL_MapRGB(format, 0xff, 0xff, 00);
+    Uint32 bg_color = SDL_MapRGB(format, 0x00, 0x00, 0x00);
+    Uint32 player_color = SDL_MapRGB(format, 0x00, 0xff, 0x00);
+    Uint32 line_color = SDL_MapRGB(format, 0x00, 0x88, 0x00);
+    Uint32 wall_color = SDL_MapRGB(format, 0x00, 0x88, 00);
 
     draw_rect(surface, 0, 0, surface->w, surface->h, bg_color);
 
@@ -49,7 +49,7 @@ void minimap_render(minimap_t *minimap, SDL_Rect dest_rect, map_t map, player_t 
         {
             double draw_x = surface->w / 2 + (x - player.x) * PX_PER_UNIT;
             double draw_y = surface->h / 2 + (y - player.y) * PX_PER_UNIT;
-            if (map_get(map, x, y) == 1)
+            if (map_get(map, x, y).type == TILE_WALL)
             {
                 draw_rect(surface, draw_x, draw_y, PX_PER_UNIT, PX_PER_UNIT, wall_color);
             }

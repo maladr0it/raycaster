@@ -1,6 +1,4 @@
 #include <SDL2/SDL.h>
-#include <SDL2_ttf/SDL_ttf.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include "main.h"
 #include "map.h"
@@ -10,25 +8,30 @@
 #include "player.h"
 #include "console.h"
 
-const int SCREEN_WIDTH = 512;
-const int SCREEN_HEIGHT = 512;
+const int SCREEN_WIDTH = 1024;
+const int SCREEN_HEIGHT = 1024;
+const int SCENE_WIDTH = 256;
+const int SCENE_HEIGHT = 256;
 const int MINIMAP_SIZE = 128;
 SDL_Rect MINIMAP_DEST_RECT = {SCREEN_WIDTH - MINIMAP_SIZE, 0, MINIMAP_SIZE, MINIMAP_SIZE};
 
 const int UPDATES_PER_SECOND = 60;
 const int DT = 1000 / UPDATES_PER_SECOND;
 
-int MAP_DATA[10][10] = {
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
+// clang-format off
+enum map_symbol MAP_DATA[100] = {
+    'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W',
+    'W', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'W',
+    'W', ' ', 'W', ' ', ' ', ' ', ' ', ' ', ' ', 'W',
+    'W', ' ', 'W', ' ', ' ', 'W', ' ', 'W', ' ', 'W',
+    'W', ' ', 'W', ' ', ' ', 'W', ' ', 'W', ' ', 'W',
+    'W', ' ', ' ', ' ', ' ', 'W', ' ', 'W', ' ', 'W',
+    'W', ' ', ' ', ' ', ' ', 'W', ' ', 'W', ' ', 'W',
+    'W', ' ', ' ', ' ', ' ', ' ', ' ', 'W', ' ', 'W',
+    'W', ' ', ' ', ' ', ' ', ' ', ' ', 'W', ' ', 'W',
+    'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W',
+};
+// clang-format on
 
 int main(int argc, char *args[])
 {
@@ -44,30 +47,33 @@ int main(int argc, char *args[])
     {
         exit(EXIT_FAILURE);
     }
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL)
     {
         exit(EXIT_FAILURE);
     }
 
-    scene_t scene = scene_create(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+    tile_t map_tiles[100];
+    map_load_assets();
+    map_create_tiles(map_tiles, MAP_DATA, 100);
+
+    map_t map = map_create(map_tiles, 10, 10);
+    scene_t scene = scene_create(renderer, SCENE_WIDTH, SCENE_HEIGHT);
     minimap_t minimap = minimap_create(renderer, MINIMAP_SIZE);
     console_init(renderer, SCREEN_WIDTH);
 
     struct game_state state =
         {
             .running = true,
-            .map = map_create((int *)MAP_DATA, 10, 10),
-            .player = player_create(2, 2),
+            .map = map,
+            .player = player_create(5, 5),
         };
-
-    SDL_Event e;
 
     while (state.running)
     {
+        console_clear();
         double d_t = DT;
 
-        console_clear();
         handle_input(&state);
 
         player_update(&(state.player), d_t);
