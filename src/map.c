@@ -4,10 +4,12 @@
 #include "texture.h"
 
 SDL_Surface *wall_texture;
+SDL_Surface *debug_texture;
 
 void map_load_assets()
 {
     wall_texture = texture_create("../assets/wall_texture.bmp");
+    debug_texture = texture_create("../assets/debug_texture.bmp");
 }
 
 void map_create_tiles(tile_t *out_tiles, enum map_symbol *map_symbols, int len)

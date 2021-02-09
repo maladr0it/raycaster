@@ -1,6 +1,7 @@
 #include <math.h>
 #include "drawing.h"
 #include "utils.h"
+#include "console.h"
 
 void put_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
 {
@@ -143,8 +144,9 @@ void draw_rect_outline(SDL_Surface *surface, int x0, int y0, int width, int heig
 }
 
 // TODO: consider performance here
-Uint32 change_brightness(Uint32 pixel)
+Uint32 change_brightness(Uint32 pixel, double factor)
 {
+
     Uint8 r, g, b;
     SDL_PixelFormat *format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBX8888);
     SDL_GetRGB(pixel, format, &r, &g, &b);
@@ -158,36 +160,33 @@ Uint32 change_brightness(Uint32 pixel)
 
 void draw_col(SDL_Surface *surface, ray_intersect_t intersect, int x0)
 {
-    int from_y;
-    int to_y;
-    double from_v;
-    double to_v;
+    double from_y, to_y, from_v, to_v;
     if (intersect.distance >= 1)
     {
-        int height = surface->h / intersect.distance;
-        from_y = (surface->h - height) / 2;
-        to_y = surface->h - from_y;
-        from_v = 0;
-        to_v = 1;
+        double height = surface->h / intersect.distance;
+        from_y = (surface->h - height) / 2.0;
+        to_y = (surface->h + height) / 2.0;
+        from_v = 0.0;
+        to_v = 1.0;
     }
     else
     {
-        from_y = 0;
+        from_y = 0.0;
         to_y = surface->h;
-        from_v = (1 - intersect.distance) / 2;
-        to_v = 1 - from_v;
+        from_v = (1.0 - intersect.distance) / 2.0;
+        to_v = 1.0 - from_v;
     }
 
-    double u = intersect.texture_u;
-    double v = from_v;
     double v_inc = (to_v - from_v) / (to_y - from_y);
+    double u = intersect.texture_u;
+    double v = from_v + v_inc * (ceil(from_y) - from_y);
 
     for (int y = from_y; y < to_y; y++)
     {
         Uint32 color = texture_get(intersect.tile.texture, u, v);
         if (intersect.face == NORTH || intersect.face == SOUTH)
         {
-            color = change_brightness(color);
+            color = change_brightness(color, 0.5);
         }
         put_pixel(surface, x0, y, color);
         v += v_inc;
